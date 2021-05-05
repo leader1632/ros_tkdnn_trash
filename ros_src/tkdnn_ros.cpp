@@ -9,7 +9,6 @@
 #include "Yolo3Detection.h"
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
 bool gRun;
 bool SAVE_RESULT = false;
 
@@ -23,83 +22,49 @@ int main(int argc, char *argv[]) {
     std::cout<<"detection\n";
     signal(SIGINT, sig_handler);
 
+    ros::init(argc, argv, "tkdnn_ros");
+    ros::NodeHandle nh;
 
-    ros::init(argc,argv,"tkdnn_ros");
-    ROS_ERROR("HI TKDNN");
-    ros::NodeHandle n;
-    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter",1000);
-    ros::Rate loop_rate(10);
+    // Initialize deep network of darknet(tkdnn)
+    std::string videoPath;
+    std::string weightsModel;
+    int numClasses;
 
-    while(ros::ok()){
-        std_msgs::String msg;
+    // Path to video file
+    nh.getParam("yolo_model/video_file/name", videoPath);
 
-        std::stringstream ss;
+    // Path to weights file
+    nh.getParam("yolo_model/weights_file/name", weightsModel);
+    ROS_INFO("weightsModel: ", weightsModel);
 
-        ROS_ERROR("HELLO TKDNN");
+    // get class size
+    nh.getParam("yolo_model/detection_classes/value", numClasses);
+    std::cout << "num_classes: " << numClasses << std::endl;
+
+    // Threshold of object detection
+    float thresh;
+    nh.getParam("yolo_model/threshold/value", thresh);
+    std::cout << "threshold: " << thresh << std::endl;
 
 
-        chatter_pub.publish(msg);
-
-        ros::spinOnce();
-        loop_rate.sleep();
-        
-    }
-    std::string net = "yolo4tiny_fp32.rt";
-    if(argc > 1)
-        net = argv[1]; 
-    #ifdef __linux__ 
-        std::string input = "../demo/yolo_test.mp4";
-    #elif _WIN32
-        std::string input = "..\\..\\..\\demo\\yolo_test.mp4";
-    #endif
-
-    if(argc > 2)
-        input = argv[2]; 
+    std::string net = weightsModel;
+    std::string input = videoPath;
     char ntype = 'y';
-    if(argc > 3)
-        ntype = argv[3][0]; 
-    int n_classes = 80;
-    if(argc > 4)
-        n_classes = atoi(argv[4]); 
+    int n_classes = numClasses;
     int n_batch = 1;
-    if(argc > 5)
-        n_batch = atoi(argv[5]); 
     bool show = true;
-    if(argc > 6)
-        show = atoi(argv[6]); 
-    float conf_thresh=0.3;
-    if(argc > 7)
-        conf_thresh = atof(argv[7]);     
-
-    if(n_batch < 1 || n_batch > 64)
-        FatalError("Batch dim not supported");
-
-    if(!show)
-        SAVE_RESULT = true;
-
+    float conf_thresh=thresh;    
+    
     tk::dnn::Yolo3Detection yolo;
     tk::dnn::CenternetDetection cnet;
     tk::dnn::MobilenetDetection mbnet;  
 
     tk::dnn::DetectionNN *detNN;  
 
-    switch(ntype)
-    {
-        case 'y':
-            detNN = &yolo;
-            break;
-        case 'c':
-            detNN = &cnet;
-            break;
-        case 'm':
-            detNN = &mbnet;
-            n_classes++;
-            break;
-        default:
-        FatalError("Network type not allowed (3rd parameter)\n");
-    }
+    //USE YOLO
+    detNN = &yolo;
 
-    detNN->init(net, n_classes, n_batch, conf_thresh);
+    detNN->init(net, n_classes, n_batch, conf_thresh); 
 
     gRun = true;
 
