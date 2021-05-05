@@ -9,6 +9,7 @@
 #include "Yolo3Detection.h"
 
 #include "ros/ros.h"
+#include "std_msgs/String.h"
 bool gRun;
 bool SAVE_RESULT = false;
 
@@ -25,6 +26,24 @@ int main(int argc, char *argv[]) {
 
     ros::init(argc,argv,"tkdnn_ros");
     ROS_ERROR("HI TKDNN");
+    ros::NodeHandle n;
+    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter",1000);
+    ros::Rate loop_rate(10);
+
+    while(ros::ok()){
+        std_msgs::String msg;
+
+        std::stringstream ss;
+
+        ROS_ERROR("HELLO TKDNN");
+
+
+        chatter_pub.publish(msg);
+
+        ros::spinOnce();
+        loop_rate.sleep();
+        
+    }
     std::string net = "yolo4tiny_fp32.rt";
     if(argc > 1)
         net = argv[1]; 

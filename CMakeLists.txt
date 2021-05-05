@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project (tkDNN)
+project (tkDNN_ros)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if(UNIX)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -Wno-deprecated-declarations -Wno-unused-variable ")
@@ -151,14 +151,15 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   
 )
-
+catkin_package()
 include_directories(
   include ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(tkdnn_ros ${CMAKE_CURRENT_SOURCE_DIR}/ros_src/demo.cpp)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/ros_src/tkdnn_ros.cpp)
 
-target_link_libraries(tkdnn_ros
+
+target_link_libraries(${PROJECT_NAME}
   tkDNN
   ${catkin_LIBRARIES}
 )

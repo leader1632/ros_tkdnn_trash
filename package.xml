@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>tkDNN</name>
+  <name>tkDNN_ros</name>
   <version>0.0.0</version>
   <description>The tkdnn_ros package</description>
 
