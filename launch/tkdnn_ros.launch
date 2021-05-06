@@ -7,6 +7,6 @@
     <!-- Load parameters -->
     <rosparam command="load" file="$(arg network_param_file)"/>
 
-    <node pkg="tkDNN_ros" name="tkDNN_ros" type="tkDNN_ros" respawn="true">
+    <node pkg="tkDNN_ros" name="tkDNN_ros" type="tkDNN_ros" respawn="true" output="screen">
     </node>
 </launch>

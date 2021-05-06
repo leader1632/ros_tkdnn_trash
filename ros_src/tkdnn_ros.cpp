@@ -8,7 +8,7 @@
 #include "MobilenetDetection.h"
 #include "Yolo3Detection.h"
 
-#include "ros/ros.h"
+
 bool gRun;
 bool SAVE_RESULT = false;
 
@@ -18,6 +18,7 @@ void sig_handler(int signo) {
 }
 
 // ROS Image converter for YOLO input
+#include "ros/ros.h"
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
     ImageConverter ic; // For ROS image input
 
 
-    ros::Publisher yolo_output = nh.advertise<tkDNN_ros::yolo_coordinateArray>("yolo_output",1);
+    ros::Publisher yolo_output = nh.advertise<tkDNN_ros::yolo_coordinateArray>("yolo_output",10);
     
     ros::Rate loop_rate(100);    
 
@@ -87,7 +88,7 @@ int main(int argc, char *argv[]) {
 
     // get class size
     nh.getParam("yolo_model/detection_classes/value", numClasses);
-    std::cout << "num_classes: " << numClasses << std::endl;
+    std::cout << "num_classes: " << numClasses << std::endl; // cout -> ROS_INFO()
 
     // Threshold of object detection
     float thresh;
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]) {
         FatalError("Batch dim not supported");
 
     if(!show)
-        SAVE_RESULT = true;
+        SAVE_RESULT = true; // make it ros parameter 
     
     tk::dnn::Yolo3Detection yolo;
     tk::dnn::CenternetDetection cnet;

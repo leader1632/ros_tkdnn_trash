@@ -21,7 +21,7 @@
 #include <opencv2/cudaarithm.hpp>
 #endif
 
-//#include <tkdnn_ros/yolo_coordinate.h>
+
 namespace tk { namespace dnn {
 
 struct GodHJBox{
