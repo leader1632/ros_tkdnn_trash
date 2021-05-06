@@ -155,6 +155,7 @@ find_package(catkin REQUIRED COMPONENTS
   
 )
 
+
 add_message_files(
   FILES
   yolo_coordinateArray.msg
@@ -162,14 +163,18 @@ add_message_files(
 
   
 )
-
 generate_messages(
   DEPENDENCIES
   std_msgs 
   
 )
+catkin_package(
+  CATKIN_DEPENDS 
+  message_runtime )
 
-catkin_package()
+
+
+
 include_directories(
   include ${catkin_INCLUDE_DIRS}
 )

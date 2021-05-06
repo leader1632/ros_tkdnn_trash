@@ -45,7 +45,6 @@ public:
         {
             
             cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-            ROS_ERROR("HI ROS IMAGE");
         }
         catch (cv_bridge::Exception& e)
         {
@@ -60,14 +59,11 @@ int main(int argc, char *argv[]) {
     std::cout<<"detection\n";
     signal(SIGINT, sig_handler);
 
-    ros::init(argc, argv, "image_converter");
+    ros::init(argc, argv, "tkdnn_ros");
     ros::NodeHandle nh;
-    
+    ros::Rate loop_rate(10);
 
-    ImageConverter ic; // For ROS image input
-
-    
-
+    ImageConverter ic; // For ROS image input 
     // Initialize deep network of darknet(tkdnn)
     std::string videoPath;
     std::string weightsModel;
@@ -141,12 +137,13 @@ int main(int argc, char *argv[]) {
         batch_dnn_input.clear();
         batch_frame.clear();
 
-        ros::spinOnce(); 
+        ros::spinOnce();
+        loop_rate.sleep();
 
         for(int bi=0; bi< n_batch; ++bi){
-            //cap >> frame; 
+            cap >> frame; 
             
-            frame=(cv_ptr->image);
+            //frame=(cv_ptr->image);
             if(!frame.data) 
                 break;
             
