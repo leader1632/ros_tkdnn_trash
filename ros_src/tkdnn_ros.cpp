@@ -23,7 +23,8 @@ void sig_handler(int signo) {
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
+#include <tkDNN_ros/yolo_coordinate.h>
+#include <tkDNN_ros/yolo_coordinateArray.h>
 cv_bridge::CvImagePtr cv_ptr;
 class ImageConverter
 {

@@ -158,8 +158,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
-  yolo_coordinateArray.msg
   yolo_coordinate.msg
+  yolo_coordinateArray.msg
 
   
 )
