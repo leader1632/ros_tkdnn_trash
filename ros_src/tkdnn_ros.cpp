@@ -56,6 +56,7 @@ public:
     }
 };
 
+
 int main(int argc, char *argv[]) {
 
     std::cout<<"detection\n";
@@ -67,7 +68,10 @@ int main(int argc, char *argv[]) {
 
     ImageConverter ic; // For ROS image input
 
+
+    ros::Publisher yolo_output = nh.advertise<tkDNN_ros::yolo_coordinateArray>("yolo_output",1);
     
+    ros::Rate loop_rate(100);    
 
     // Initialize deep network of darknet(tkdnn)
     std::string videoPath;
@@ -138,11 +142,30 @@ int main(int argc, char *argv[]) {
     std::vector<cv::Mat> batch_frame;
     std::vector<cv::Mat> batch_dnn_input;
 
+    std::vector<tk::dnn::GodHJBox> box_ary;
+    tkDNN_ros::yolo_coordinate output;
+
     while(gRun && ros::ok()) {
+        tkDNN_ros::yolo_coordinateArray output_array;
+        output.header.stamp = ros::Time::now();
+
+        for(auto&&b : box_ary){
+            output.x = b.x;
+            output.y = b.y;
+            output.w = b.w;
+            output.h = b.h;
+            output.label = b.label;
+            output_array.results.push_back(output);
+        }
+        
+
+        yolo_output.publish(output_array);
+        ros::spinOnce(); 
+        loop_rate.sleep();
         batch_dnn_input.clear();
         batch_frame.clear();
 
-        ros::spinOnce(); 
+        
 
         for(int bi=0; bi< n_batch; ++bi){
             //cap >> frame; 
@@ -161,7 +184,7 @@ int main(int argc, char *argv[]) {
     
         //inference
         detNN->update(batch_dnn_input, n_batch);
-        detNN->draw(batch_frame);
+        detNN->draw2(batch_frame, box_ary);
 
         if(show){
             for(int bi=0; bi< n_batch; ++bi){
