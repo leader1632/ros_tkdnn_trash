@@ -26,6 +26,7 @@ namespace tk { namespace dnn {
 
 struct GodHJBox{
     int x, y, w, h;
+    float confidence;
     std::string label;
     
 };
@@ -193,6 +194,7 @@ class DetectionNN {
             tk::dnn::box b;
 
             int x0, w, x1, y0, h, y1;
+            float conf;
             int objClass;
             std::string det_class;
 
@@ -210,6 +212,7 @@ class DetectionNN {
                     x1          = b.x + b.w;
                     y0          = b.y;
                     y1          = b.y + b.h;
+                    conf = b.prob;
                     det_class   = classesNames[b.cl];
 
 
@@ -229,6 +232,8 @@ class DetectionNN {
                     output.w = b.w;
                     output.h = b.h;
                     output.label = det_class;
+                    output.confidence = b.prob;
+                   
 
                     ary.push_back(output);
                 }

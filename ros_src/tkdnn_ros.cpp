@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 
     // Path to weights file
     nh.getParam("yolo_model/weights_file/name", weightsModel);
-    ROS_INFO("weightsModel: %s", weightsModel);
+    ROS_INFO("weightsModel: %s", weightsModel.c_str());
 
     // get class size
     nh.getParam("yolo_model/detection_classes/value", numClasses);
@@ -173,6 +173,7 @@ int main(int argc, char *argv[]) {
             output.w = b.w;
             output.h = b.h;
             output.label = b.label;
+            output.confidence = b.confidence;
             output_array.results.push_back(output);
         }
         
