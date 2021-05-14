@@ -47,7 +47,7 @@ public:
         {
             
             cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-            ROS_ERROR("HI ROS IMAGE");
+            
         }
         catch (cv_bridge::Exception& e)
         {
@@ -60,19 +60,26 @@ public:
 
 int main(int argc, char *argv[]) {
 
+
     std::cout<<"detection\n";
     signal(SIGINT, sig_handler);
 
+    ROS_INFO("Initialize ROS");
     ros::init(argc, argv, "image_converter");
+
+
     ros::NodeHandle nh;
     
-
+    
     ImageConverter ic; // For ROS image input
 
 
+
     ros::Publisher yolo_output = nh.advertise<tkDNN_ros::yolo_coordinateArray>("yolo_output",10);
+    ROS_INFO("add publisher : yolo_output");
+    uint rate = 100;
+    ros::Rate loop_rate(rate);    
     
-    ros::Rate loop_rate(100);    
 
     // Initialize deep network of darknet(tkdnn)
     std::string videoPath;
@@ -84,16 +91,17 @@ int main(int argc, char *argv[]) {
 
     // Path to weights file
     nh.getParam("yolo_model/weights_file/name", weightsModel);
-    ROS_INFO("weightsModel: ", weightsModel);
+    ROS_INFO("weightsModel: %s", weightsModel);
 
     // get class size
     nh.getParam("yolo_model/detection_classes/value", numClasses);
-    std::cout << "num_classes: " << numClasses << std::endl; // cout -> ROS_INFO()
-
+    
+    ROS_INFO("class : %d", numClasses);
     // Threshold of object detection
     float thresh;
     nh.getParam("yolo_model/threshold/value", thresh);
-    std::cout << "threshold: " << thresh << std::endl;
+    
+    ROS_INFO("threshold : %f", thresh);
 
 
     std::string net = weightsModel;
@@ -103,10 +111,10 @@ int main(int argc, char *argv[]) {
     int n_batch = 1;
     bool show = true;
     float conf_thresh=thresh;    
-
+    ROS_INFO("ntype : %c, batch size : %d",ntype, n_batch);
 
     if(n_batch < 1 || n_batch > 64)
-        FatalError("Batch dim not supported");
+        ROS_ERROR("Batch dim not supported");
 
     if(!show)
         SAVE_RESULT = true; // make it ros parameter 
@@ -117,8 +125,12 @@ int main(int argc, char *argv[]) {
 
     tk::dnn::DetectionNN *detNN;  
 
+    ROS_INFO("Algorithm : YOLO");
     detNN = &yolo;
+
+    ROS_INFO("initialize YOLO");
     detNN->init(net, n_classes, n_batch, conf_thresh); 
+
 
     gRun = true;
 
@@ -126,7 +138,7 @@ int main(int argc, char *argv[]) {
     if(!cap.isOpened())
         gRun = false; 
     else
-        std::cout<<"camera started\n";
+        ROS_INFO("camera started\n");
 
     cv::VideoWriter resultVideo;
     if(SAVE_RESULT) {
@@ -146,10 +158,15 @@ int main(int argc, char *argv[]) {
     std::vector<tk::dnn::GodHJBox> box_ary;
     tkDNN_ros::yolo_coordinate output;
 
+    ROS_INFO("Start Detection");
     while(gRun && ros::ok()) {
-        tkDNN_ros::yolo_coordinateArray output_array;
-        output.header.stamp = ros::Time::now();
+        
+        double begin = ros::Time::now().toSec(); // for FPS
 
+        tkDNN_ros::yolo_coordinateArray output_array;
+       
+        output.header.stamp = ros::Time::now();
+        
         for(auto&&b : box_ary){
             output.x = b.x;
             output.y = b.y;
@@ -159,13 +176,17 @@ int main(int argc, char *argv[]) {
             output_array.results.push_back(output);
         }
         
-
+       
         yolo_output.publish(output_array);
+        
         ros::spinOnce(); 
+        
         loop_rate.sleep();
+       
         batch_dnn_input.clear();
+     
         batch_frame.clear();
-
+       
         
 
         for(int bi=0; bi< n_batch; ++bi){
@@ -180,7 +201,7 @@ int main(int argc, char *argv[]) {
             // this will be resized to the net format
             batch_dnn_input.push_back(frame.clone());
         } 
-        if(!frame.data) 
+        if(!frame.data)
             break;
     
         //inference
@@ -195,6 +216,10 @@ int main(int argc, char *argv[]) {
         }
         if(n_batch == 1 && SAVE_RESULT)
             resultVideo << frame;
+
+        double fin = ros::Time::now().toSec(); // for FPS // for FPS
+        
+        ROS_INFO("time : %f, FPS : %d", (fin-begin), int(1/(fin-begin))); // for FPS
     }
 
     std::cout<<"detection end\n";   
