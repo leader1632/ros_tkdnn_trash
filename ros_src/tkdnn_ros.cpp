@@ -24,8 +24,8 @@ void sig_handler(int signo) {
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <tkDNN_ros/yolo_coordinate.h>
-#include <tkDNN_ros/yolo_coordinateArray.h>
+#include <ros_tkdnn/yolo_coordinate.h>
+#include <ros_tkdnn/yolo_coordinateArray.h>
 cv_bridge::CvImagePtr cv_ptr;
 class ImageConverter
 {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
 
 
-    ros::Publisher yolo_output = nh.advertise<tkDNN_ros::yolo_coordinateArray>("yolo_output",10);
+    ros::Publisher yolo_output = nh.advertise<ros_tkdnn::yolo_coordinateArray>("yolo_output",10);
     ROS_INFO("add publisher : yolo_output");
     uint rate = 100;
     ros::Rate loop_rate(rate);    
@@ -156,14 +156,14 @@ int main(int argc, char *argv[]) {
     std::vector<cv::Mat> batch_dnn_input;
 
     std::vector<tk::dnn::GodHJBox> box_ary;
-    tkDNN_ros::yolo_coordinate output;
+    ros_tkdnn::yolo_coordinate output;
 
     ROS_INFO("Start Detection");
     while(gRun && ros::ok()) {
         
         double begin = ros::Time::now().toSec(); // for FPS
 
-        tkDNN_ros::yolo_coordinateArray output_array;
+        ros_tkdnn::yolo_coordinateArray output_array;
        
         output.header.stamp = ros::Time::now();
         
