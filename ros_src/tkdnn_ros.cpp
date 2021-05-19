@@ -168,12 +168,18 @@ int main(int argc, char *argv[]) {
         output.header.stamp = ros::Time::now();
         
         for(auto&&b : box_ary){
-            output.x = b.x;
-            output.y = b.y;
+            output.x_center = b.x_center;
+            output.y_center = b.y_center;
             output.w = b.w;
             output.h = b.h;
             output.label = b.label;
             output.confidence = b.confidence;
+           // output.size = b.size;
+            output.xmin = b.xmin;
+            output.xmax = b.xmax;
+            output.ymin = b.ymin;
+            output.ymax = b.ymax;
+            output.size = b.size;
             output_array.results.push_back(output);
         }
         

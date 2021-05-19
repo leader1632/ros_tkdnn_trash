@@ -25,9 +25,10 @@
 namespace tk { namespace dnn {
 
 struct GodHJBox{
-    int x, y, w, h;
+    int x_center, y_center, w, h, xmin, xmax, ymin, ymax ;
     float confidence;
     std::string label;
+    int size;
     
 };
 
@@ -207,6 +208,10 @@ class DetectionNN {
             for(int bi=0; bi<frames.size(); ++bi){
                 // draw dets
                 for(int i=0; i<batchDetected[bi].size(); i++) { 
+                    //
+                    int size;
+                    size = batchDetected[bi].size();
+                    //
                     b           = batchDetected[bi][i];
                     x0          = b.x;
                     x1          = b.x + b.w;
@@ -227,13 +232,17 @@ class DetectionNN {
                     cv::putText(frames[bi], det_class, cv::Point(x0, (y0 - (baseline / 2))), cv::FONT_HERSHEY_SIMPLEX, font_scale, cv::Scalar(255, 255, 255), thickness);
 
                     //added by hj
-                    output.x = (x0+x1)/2;
-                    output.y = (y0+y1)/2;
+                    output.x_center = (x0+x1)/2;
+                    output.y_center = (y0+y1)/2;
                     output.w = b.w;
                     output.h = b.h;
                     output.label = det_class;
                     output.confidence = b.prob;
-                   
+                    output.xmin = x0;
+                    output.xmax = x1;
+                    output.ymin = y0;
+                    output.ymax = y1;
+                    output.size = size;
 
                     ary.push_back(output);
                 }
