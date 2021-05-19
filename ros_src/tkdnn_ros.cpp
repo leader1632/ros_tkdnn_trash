@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
 
     ROS_INFO("Start Detection");
     while(gRun && ros::ok()) {
-        
+        ROS_ERROR("HERE");
         double begin = ros::Time::now().toSec(); // for FPS
 
         ros_tkdnn::yolo_coordinateArray output_array;
