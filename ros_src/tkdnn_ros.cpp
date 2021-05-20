@@ -170,6 +170,7 @@ int main(int argc, char *argv[]) {
     std::vector<cv::Mat> batch_dnn_input;
 
     std::vector<tk::dnn::GodHJBox> box_ary;
+
     ros_tkdnn::yolo_coordinate output;
 
     ROS_INFO("Start Detection");
@@ -178,10 +179,9 @@ int main(int argc, char *argv[]) {
         double begin = ros::Time::now().toSec(); // for FPS
 
         ros_tkdnn::yolo_coordinateArray output_array;
-       
-        output.header.stamp = ros::Time::now();
         
-        for(auto&&b : box_ary){
+        output.header.stamp = ros::Time::now();
+        for(auto &b : box_ary){ //problem!!!!!!!!!!!!!!!!!!!!!!!!!!!
             output.x_center = b.x_center;
             output.y_center = b.y_center;
             output.w = b.w;
@@ -193,11 +193,10 @@ int main(int argc, char *argv[]) {
             output.ymin = b.ymin;
             output.ymax = b.ymax;
             output.size = b.size;
-            output.id = -1;
+            output.id = 1;
             output_array.results.push_back(output);
         }
-        
-       
+
         yolo_output.publish(output_array);
         
         ros::spinOnce(); 

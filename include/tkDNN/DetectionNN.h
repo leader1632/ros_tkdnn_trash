@@ -192,11 +192,12 @@ class DetectionNN {
         }
 
         void draw2(std::vector<cv::Mat>& frames, std::vector<tk::dnn::GodHJBox>& output_ary) {
+
             tk::dnn::box b;
 
-            int x0, w, x1, y0, h, y1;
-            float conf;
-            int objClass;
+            int x0=0, w=0, x1=0, y0=0, h=0, y1=0;
+            float conf=0;
+            int objClass=0;
             std::string det_class;
 
             int baseline = 0;
@@ -221,15 +222,21 @@ class DetectionNN {
                     det_class   = classesNames[b.cl];
 
 
-                  
                     //std::cout << std::fixed << std::setprecision(6)<<b.cl<<" "<<Yx<<" "<<Yy<<" "<<Yw<<" "<<Yh<<"\n";
                     // draw rectangle
-                    cv::rectangle(frames[bi], cv::Point(x0, y0), cv::Point(x1, y1), colors[b.cl], 2); 
+                    cv::rectangle(frames[bi], cv::Point(x0, y0), cv::Point(x1, y1), colors[b.cl], 2);
+                    cv::rectangle(frames[bi], cv::Point(393, 65), cv::Point(66, 326), colors[b.cl], 2); 
+            
 
                     // draw label
                     cv::Size text_size = getTextSize(det_class, cv::FONT_HERSHEY_SIMPLEX, font_scale, thickness, &baseline);
                     cv::rectangle(frames[bi], cv::Point(x0, y0), cv::Point((x0 + text_size.width - 2), (y0 - text_size.height - 2)), colors[b.cl], -1);                      
-                    cv::putText(frames[bi], det_class, cv::Point(x0, (y0 - (baseline / 2))), cv::FONT_HERSHEY_SIMPLEX, font_scale, cv::Scalar(255, 255, 255), thickness);
+                    cv::putText(frames[bi], det_class+"hrjeong", cv::Point(x0, (y0 - (baseline / 2))), cv::FONT_HERSHEY_SIMPLEX, font_scale, cv::Scalar(255, 255, 255), thickness);
+                    
+                    std::cout << x0 << std::endl << std::endl;//to check the probelm
+                    std::cout << x1 << std::endl << std::endl;
+                    std::cout << y0 << std::endl << std::endl;
+                    std::cout << y1 << std::endl << std::endl;
 
                     //added by hj
                     output.x_center = (x0+x1)/2;
@@ -245,10 +252,12 @@ class DetectionNN {
                     output.size = size;
                     output.id = -1;
 
+
                     ary.push_back(output);
                 }
             }
             output_ary = ary;
+
         }
 };
 
