@@ -4,8 +4,11 @@ yolo_model:
     name: /home/hrjeong/kdarpa/tkDNN/demo/test2.mp4
   weights_file:
     name: /home/hrjeong/kdarpa/tkDNN/build/new_5_17_tiny_fp32.rt
-
   threshold:
     value: 0.5
   detection_classes:
     value: 2
+  input_mode:
+    value: 0 # if value=1 -> camera
+            # else if value=0 -> video_file
+
