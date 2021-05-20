@@ -25,7 +25,7 @@
 namespace tk { namespace dnn {
 
 struct GodHJBox{
-    int x_center, y_center, w, h, xmin, xmax, ymin, ymax ;
+    int x_center, y_center, w, h, xmin, xmax, ymin, ymax,id ;
     float confidence;
     std::string label;
     int size;
@@ -243,6 +243,7 @@ class DetectionNN {
                     output.ymin = y0;
                     output.ymax = y1;
                     output.size = size;
+                    output.id = -1;
 
                     ary.push_back(output);
                 }

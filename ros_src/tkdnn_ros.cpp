@@ -179,6 +179,7 @@ int main(int argc, char *argv[]) {
             output.ymin = b.ymin;
             output.ymax = b.ymax;
             output.size = b.size;
+            output.id = -1;
             output_array.results.push_back(output);
         }
         

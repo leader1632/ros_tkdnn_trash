@@ -10,3 +10,4 @@ uint8 xmax
 uint8 ymin
 uint8 ymax
 uint8 size
+uint8 id
