@@ -26,6 +26,9 @@ void sig_handler(int signo) {
 #include <opencv2/highgui/highgui.hpp>
 #include <ros_tkdnn/yolo_coordinate.h>
 #include <ros_tkdnn/yolo_coordinateArray.h>
+
+#define CAMERA 1
+#define VIDEO 0
 cv_bridge::CvImagePtr cv_ptr;
 class ImageConverter
 {
@@ -85,7 +88,18 @@ int main(int argc, char *argv[]) {
     std::string videoPath;
     std::string weightsModel;
     int numClasses;
+    int input_mode = -1; // 1: camera, 0 : video
 
+    nh.getParam("yolo_model/input_mode/value", input_mode);
+    if(input_mode == CAMERA){
+        ROS_INFO("input mode : camera");
+    }
+    else if(input_mode == VIDEO){
+        ROS_INFO("input mode : video");
+    }
+    else{
+        ROS_ERROR("input mode must be 1(CAMERA) or 0(VIDEO)");
+    }
     // Path to video file
     nh.getParam("yolo_model/video_file/name", videoPath);
 
@@ -197,9 +211,11 @@ int main(int argc, char *argv[]) {
         
 
         for(int bi=0; bi< n_batch; ++bi){
-            //cap >> frame; 
             
-            frame=(cv_ptr->image);
+            if(input_mode == CAMERA){frame=(cv_ptr->image);}
+            else if(input_mode == VIDEO){cap >> frame;}
+            else{ROS_ERROR("input is neither camera or video");}
+            
             if(!frame.data) 
                 break;
             
