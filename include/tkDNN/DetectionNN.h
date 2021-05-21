@@ -256,7 +256,7 @@ class DetectionNN {
                     ary.push_back(output);
                 }
             }
-            output_ary = ary;
+            output_ary = ary; //hello my name is
 
         }
 };
